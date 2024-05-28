@@ -6,14 +6,16 @@ import deleteLogo from '../images/delete.png';
 import editLogo from '../images/edit.png';
 import saveLogo from '../images/save.png';
 import cancelLogo from '../images/cancel.png';
-import '../stylesheet/passwords.css'
+import clipboardLogo from '../images/clipboard.png';
+import '../stylesheet/passwords.css';
+import '../styles.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-
-
 
 const Passwords = ({ passwords, account, deletePassword, editPassword, getProfile }) => {
   const [editMode, setEditMode] = useState(null);
   const [newContent, setNewContent] = useState("");
+  const [visiblePasswords, setVisiblePasswords] = useState({});
+
   const handleEdit = (passwordId, content, author) => {
     if (author === account) {
       setEditMode(passwordId);
@@ -27,6 +29,18 @@ const Passwords = ({ passwords, account, deletePassword, editPassword, getProfil
       setEditMode(null);
       setNewContent("");
     }
+  };
+
+  const handleToggleVisibility = (passwordId) => {
+    setVisiblePasswords({
+      ...visiblePasswords,
+      [passwordId]: !visiblePasswords[passwordId],
+    });
+  };
+
+  const handleCopyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    alert('Copied 🙌');
   };
 
   const renderEditButtons = (password) => {
@@ -52,7 +66,7 @@ const Passwords = ({ passwords, account, deletePassword, editPassword, getProfil
         <div key={password.id} className="tweet">
           <img
             className="user-icon"
-            src={`https://api.multiavatar.com/${password.username}.svg`}
+            src={`https://source.boringavatars.com/bauhaus/120/${password.username}`}
             alt="User Icon"
           />
           <div className="tweet-inner">
@@ -72,10 +86,40 @@ const Passwords = ({ passwords, account, deletePassword, editPassword, getProfil
               </div>
             ) : (
               <>
-                <div className="content">{ `Username:${password.username}`}</div>
-                <div className="content">{ `Site:${password.site}`}</div>
-                <div className="content">{ `Notes:${password.notes}`}</div>
-                <div className="content">{ `Password :${password.content}`}</div>
+                <div className="content" style={{ minWidth: '300px' }}>
+                  <span style={{ minWidth: '300px', display: 'inline-block' }}><strong>{`Username : `}</strong>
+                  &nbsp;&nbsp;&nbsp;&nbsp;{password.username} </span>
+                  <button onClick={() => handleCopyToClipboard(password.username)}>
+                    <img src={clipboardLogo} alt="Copy" style={{ height: '15px' }} />
+                  </button>
+                </div>
+
+
+
+                <div className="content" style={{ minWidth: '300px' }}>
+                  <span style={{ minWidth: '300px', display: 'inline-block' }}><strong style={{ minWidth: '80px', display: 'inline-block' }}>{`Site  `}</strong><span><strong>: </strong></span>
+                  &nbsp;&nbsp;&nbsp;&nbsp;{password.site}</span>
+                  <button onClick={() => handleCopyToClipboard(password.site)}>
+                    <img src={clipboardLogo} alt="Copy" style={{ height: '15px' }} />
+                  </button>
+                </div>
+
+
+                <div className="content">
+                  <span style={{ minWidth: '263px', display: 'inline-block' }}><strong>{'Password : '}</strong>
+                  &nbsp;&nbsp;&nbsp;&nbsp; {`${visiblePasswords[password.id] ? password.content : '********'}`}</span>
+                  <button onClick={() => handleToggleVisibility(password.id)}>
+                    <i className={`fa ${visiblePasswords[password.id] ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                  </button>
+                  <button onClick={() => handleCopyToClipboard(password.content)}>
+                    <img src={clipboardLogo} alt="Copy" style={{ height: '15px' }} />
+                  </button>
+                </div>
+                <div className="content">
+                  <strong style={{ minWidth: '80px', display: 'inline-block' }}>Notes</strong><span><strong>: </strong></span>
+                  &nbsp;&nbsp;&nbsp;&nbsp;{password.notes.length > 0 ? password.notes : '--------'}
+                </div>
+
                 <div className="date">{new moment(Number(password.timestamp) * 1000).toLocaleString().split(' GMT')[0]}</div>
               </>
             )}
@@ -88,4 +132,3 @@ const Passwords = ({ passwords, account, deletePassword, editPassword, getProfil
 };
 
 export default Passwords;
-

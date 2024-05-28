@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import '../stylesheet/profileCreation.css'
 const ProfileCreation = ({ checkProfile, profileContract, account }) => {
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
@@ -25,25 +25,24 @@ const ProfileCreation = ({ checkProfile, profileContract, account }) => {
     <div className="create-profile-form">
       <h2>Create your profile</h2>
       <form onSubmit={createProfile}>
-        <label>
-          Username:
+        
           <input
             type="text"
+            placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
             className="profile-input"
           />
-        </label>
-        <label>
-          Bio:
+        
           <textarea
             value={bio}
+            placeholder="About You"
             onChange={(e) => setBio(e.target.value)}
             className="profile-input"
           />
-        </label>
-        <button type="submit" className="profile-submit">
+        
+        <button  id="#connectWalletBtn"type="submit" className="profile-submit">
           {loading ? <div className="spinner"></div> : <>Create Profile</>}
         </button>
       </form>

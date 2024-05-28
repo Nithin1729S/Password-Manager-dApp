@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import '../stylesheet/addPasswords.css'
+import '../styles.css'
 const AddPassword = ({ contract, account, getPasswords, getProfile }) => {
   const [site, setSite] = useState("");
   const [username, setUsername] = useState("");
@@ -31,11 +32,17 @@ const AddPassword = ({ contract, account, getPasswords, getProfile }) => {
     try {
       setLoading(true);
       await contract.methods.createPassword(site, username, notes, password).send({ from: account });
+      setSite("");
+      setUsername("");
+      setNotes("");
+      setPassword("");
+      document.getElementById("passwordForm").reset();
       getPasswords();
     } catch (error) {
       console.error("User rejected request:", error);
     } finally {
       setLoading(false);
+      document.getElementById("passwordForm").reset();
     }
   }
 
@@ -51,7 +58,7 @@ const AddPassword = ({ contract, account, getPasswords, getProfile }) => {
           >            
           
           <input
-          type="text"
+          type="website"
           placeholder="Site"
           value={site}
           onChange={(e) => setSite(e.target.value)}

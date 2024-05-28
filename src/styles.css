@@ -21,6 +21,7 @@ body {
   width: 10px;
   height: 10px;
   border-radius: 50%;
+  margin:auto;
   border-left-color: #09f;
   animation: spin 1s linear infinite;
 }
@@ -171,15 +172,18 @@ button[type="submit"] {
 
 .create-profile-form {
   display: flex;
+  justify-content: center;
+  align-items: center;
   flex-direction: column;
   margin-top: 20px;
   padding: 20px;
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
   border-radius: 5px;
 }
 
 .create-profile-form h2 {
-  color: #1da1f2;
+  text-align: center;
+  color: #a637e5;
   margin-bottom: 20px;
 }
 
@@ -197,13 +201,21 @@ button[type="submit"] {
 }
 
 .profile-submit {
-  background-color: #1da1f2;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 20px;
-  cursor: pointer;
-  margin-top: 10px;
+  background: radial-gradient(circle at 10% 20%, rgb(249, 57, 170) 9.8%, rgb(134, 176, 255) 94.9%);
+    color: #fff;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    /* display: none; */
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-top: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    min-width: 150px;
+    min-height: 40px;
 }
 
 

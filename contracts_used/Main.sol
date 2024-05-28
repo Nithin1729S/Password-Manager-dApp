@@ -13,39 +13,40 @@ interface IProfile {
     function getProfile(address _user) external view returns (UserProfile memory);
 }
 
-contract Twitter is Ownable {
+//content means password
+contract PasswordManager is Ownable {
 
-    uint16 public MAX_TWEET_LENGTH = 280;
-
-    struct Tweet {
+    struct Password {
         uint256 id;
         address author;
+        string site;
+        string username;
+        string notes;
         string content;
         uint256 timestamp;
-        uint256 likes;
         bool deleted; // Track if the tweet is deleted
     }
 
-    struct TweetWithProfile {
+    struct PasswordWithProfile {
         uint256 id;
         address author;
         string content;
+        string site;
+        string username;
+        string notes;
         uint256 timestamp;
-        uint256 likes;
         string displayName;
     }
 
-    mapping(address => Tweet[]) public tweets;
+    mapping(address => Password[]) public passwords;
     address[] public users;
-    mapping(address => bool) public hasTweeted;
+    mapping(address => bool) public hasCommited;
 
     IProfile profileContract;
 
-    event TweetCreated(uint256 id, address author, string content, uint256 timestamp);
-    event TweetLiked(address liker, address tweetAuthor, uint256 tweetId, uint256 newLikeCount);
-    event TweetUnliked(address unliker, address tweetAuthor, uint256 tweetId, uint256 newLikeCount);
-    event TweetDeleted(address author, uint256 tweetId);
-    event TweetEdited(address author, uint256 tweetId, string newContent);
+    event PasswordCreated(uint256 id, address author, string content, string site,string username,string notes,uint256 timestamp);
+    event PasswordDeleted(address author, uint256 passwordId);
+    event PasswordEdited(address author, uint256 passwordId, string newContent);   //only password allowed to change
 
     modifier onlyRegistered() {
         IProfile.UserProfile memory userProfileTemp = profileContract.getProfile(msg.sender);
@@ -57,113 +58,79 @@ contract Twitter is Ownable {
         profileContract = IProfile(_profileContract);
     }
 
-    function changeTweetLength(uint16 newTweetLength) public onlyOwner {
-        MAX_TWEET_LENGTH = newTweetLength;
-    }
+    function createPassword(string memory _site,string memory _username, string memory _notes,string memory _password) public onlyRegistered {
+        require(bytes(_password).length <= 100, "Too long!!!");
+        require(bytes(_username).length <= 100, "Too long!!!");
+        require(bytes(_site).length <= 100, "Too long!!!");
+        require(bytes(_notes).length <= 200, "Too long!!!");
 
-    function getTotalLikes(address _author) external view returns (uint) {
-        uint totalLikes;
-        for (uint i = 0; i < tweets[_author].length; i++) {
-            if (!tweets[_author][i].deleted) {
-                totalLikes += tweets[_author][i].likes;
-            }
-        }
-        return totalLikes;
-    }
 
-    function createTweet(string memory _tweet) public onlyRegistered {
-        require(bytes(_tweet).length <= MAX_TWEET_LENGTH, "Tweet is too long bro!");
-
-        Tweet memory newTweet = Tweet({
-            id: tweets[msg.sender].length,
+        Password memory newPassword = Password({
+            id: passwords[msg.sender].length,
             author: msg.sender,
-            content: _tweet,
+            content: _password,
+            site:_site,
+            username:_username,
+            notes:_notes,
             timestamp: block.timestamp,
-            likes: 0,
             deleted: false
         });
 
-        tweets[msg.sender].push(newTweet);
+        passwords[msg.sender].push(newPassword);
 
-        if (!hasTweeted[msg.sender]) {
+        if (!hasCommited[msg.sender]) {
             users.push(msg.sender);
-            hasTweeted[msg.sender] = true;
+            hasCommited[msg.sender] = true;
         }
 
-        emit TweetCreated(newTweet.id, newTweet.author, newTweet.content, newTweet.timestamp);
+        emit PasswordCreated(newPassword.id, newPassword.author, newPassword.content,newPassword.site,newPassword.username,newPassword.notes,newPassword.timestamp);
     }
 
-    function likeTweet(address author, uint256 id) external onlyRegistered {
-        require(id < tweets[author].length, "TWEET DOES NOT EXIST");
-        require(!tweets[author][id].deleted, "TWEET IS DELETED");
+     function deletePassword(uint256 id) public {
+        require(id < passwords[msg.sender].length, "PASSWORD DOES NOT EXIST");
+        require(!passwords[msg.sender][id].deleted, "PASSWORD ALREADY DELETED");
 
-        tweets[author][id].likes++;
-        emit TweetLiked(msg.sender, author, id, tweets[author][id].likes);
+        passwords[msg.sender][id].deleted = true;
+        emit PasswordDeleted(msg.sender, id);
     }
 
-    function unlikeTweet(address author, uint256 id) external onlyRegistered {
-        require(id < tweets[author].length, "TWEET DOES NOT EXIST");
-        require(!tweets[author][id].deleted, "TWEET IS DELETED");
-        require(tweets[author][id].likes > 0, "TWEET HAS NO LIKES");
+    function editPassword(uint256 id, string memory newContent) public {
+        require(id < passwords[msg.sender].length, "PASSWORD DOES NOT EXIST");
+        require(!passwords[msg.sender][id].deleted, "PASSWORD IS DELETED");
+        require(bytes(newContent).length <= 100, "PASSWORD is too long bro!");
 
-        tweets[author][id].likes--;
-        emit TweetUnliked(msg.sender, author, id, tweets[author][id].likes);
+        passwords[msg.sender][id].content = newContent;
+        emit PasswordEdited(msg.sender, id, newContent);
+    }
+    
+
+    function getPassword(uint _i) public view returns (Password memory) {
+        require(_i < passwords[msg.sender].length, "PASSWORD DOES NOT EXIST");
+        require(!passwords[msg.sender][_i].deleted, "PASSWORD IS DELETED");
+        return passwords[msg.sender][_i];
     }
 
-    function getTweet(uint _i) public view returns (Tweet memory) {
-        require(_i < tweets[msg.sender].length, "TWEET DOES NOT EXIST");
-        require(!tweets[msg.sender][_i].deleted, "TWEET IS DELETED");
-        return tweets[msg.sender][_i];
-    }
-
-    function getAllTweets(address _owner) public view returns (Tweet[] memory) {
-        return tweets[_owner];
-    }
-
-    function getAllTweets() public view returns (TweetWithProfile[] memory) {
-        uint totalTweets = 0;
-        for (uint i = 0; i < users.length; i++) {
-            totalTweets += tweets[users[i]].length;
+    function getAllPasswords(address _owner) public view returns (Password[] memory) {
+    uint256 nonDeletedCount = 0;
+    for (uint256 i = 0; i < passwords[_owner].length; i++) {
+        if (!passwords[_owner][i].deleted) {
+            nonDeletedCount++;
         }
+    }
 
-        TweetWithProfile[] memory allTweetsWithProfile = new TweetWithProfile[](totalTweets);
-        uint currentIndex = 0;
-
-        for (uint i = 0; i < users.length; i++) {
-            IProfile.UserProfile memory userProfile = profileContract.getProfile(users[i]);
-            for (uint j = 0; j < tweets[users[i]].length; j++) {
-                if (!tweets[users[i]][j].deleted) {
-                    Tweet memory tweet = tweets[users[i]][j];
-                    allTweetsWithProfile[currentIndex] = TweetWithProfile({
-                        id: tweet.id,
-                        author: tweet.author,
-                        content: tweet.content,
-                        timestamp: tweet.timestamp,
-                        likes: tweet.likes,
-                        displayName: userProfile.displayName
-                    });
-                    currentIndex++;
-                }
-            }
+    Password[] memory nonDeletedPasswords = new Password[](nonDeletedCount);
+    uint256 index = 0;
+    for (uint256 i = 0; i < passwords[_owner].length; i++) {
+        if (!passwords[_owner][i].deleted) {
+            nonDeletedPasswords[index] = passwords[_owner][i];
+            index++;
         }
-
-        return allTweetsWithProfile;
     }
 
-    function deleteTweet(uint256 id) public {
-        require(id < tweets[msg.sender].length, "TWEET DOES NOT EXIST");
-        require(!tweets[msg.sender][id].deleted, "TWEET ALREADY DELETED");
+    return nonDeletedPasswords;
+}
 
-        tweets[msg.sender][id].deleted = true;
-        emit TweetDeleted(msg.sender, id);
-    }
 
-    function editTweet(uint256 id, string memory newContent) public {
-        require(id < tweets[msg.sender].length, "TWEET DOES NOT EXIST");
-        require(!tweets[msg.sender][id].deleted, "TWEET IS DELETED");
-        require(bytes(newContent).length <= MAX_TWEET_LENGTH, "Tweet is too long bro!");
 
-        tweets[msg.sender][id].content = newContent;
-        emit TweetEdited(msg.sender, id, newContent);
-    }
+   
 }
