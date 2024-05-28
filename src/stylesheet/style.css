@@ -1,0 +1,47 @@
+.tweet-actions {
+    position:absolute;
+    margin-left: 500px;
+}
+
+.tweet-actions button img {
+    width: 20px; /* Adjust the width as needed */
+    height: 20px; /* Adjust the height as needed */
+    margin-right: 5px; /* Optional: Add margin to the right of the image */
+  }
+  
+  .tweet-actions button {
+    border: none; /* Remove the border */
+    background-color: transparent; /* Remove the background color */
+    box-shadow: none; /* Remove any box shadow */
+    outline: none; /* Remove the outline */
+  }
+
+.editArea button {
+    border: none; /* Remove the border */
+    background-color: transparent; /* Remove the background color */
+    box-shadow: none; /* Remove any box shadow */
+    outline: none; /* Remove the outline */
+}
+  
+ 
+.editArea button img {
+    width: 20px; /* Adjust the width as needed */
+    height: 20px; /* Adjust the height as needed */
+    margin-right: 5px; /* Optional: Add margin to the right of the image */
+  }
+
+  .tweet-inner {
+    position: relative;
+  }
+  
+  .editArea textarea {
+    /* width: 300px; */
+    /* display: none; */
+    min-height: 50px; /* Set a minimum height to prevent collapsing */
+    resize: vertical; /* Allow vertical resizing */
+  }
+  
+.content{
+  word-wrap: break-word;
+  max-width:400px;
+}
