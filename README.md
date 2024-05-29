@@ -1,4 +1,7 @@
 # Web3 Vault dApp
+## Live Demo
+
+Visit the live version of the Web3 Vault dApp [here](https://web3vault.vercel.app).
 
 ## Demo of the Project
 Experience the functionality of our Web3 Vault dApp by watching the demo
