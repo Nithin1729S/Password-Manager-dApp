@@ -1,4 +1,7 @@
 # Web3 Vault dApp
+
+A Decentralized Password Manager compiled in Remix IDE , deployed on Ethereum BlockChain (Sepolia TestNet). The frontend is designed using ReactJS and CRUD functionalities are implemented. Users can save their passwords securely using blockchain technology.
+
 ## Live Demo
 
 Visit the live version of the Web3 Vault dApp [here](https://web3vault.vercel.app).
