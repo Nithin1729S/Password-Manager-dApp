@@ -107,3 +107,14 @@ To get started with the Web3 Vault dApp, please follow the steps below:
     - Once connected, your account will be created automatically.
     - You can now start adding and managing your passwords securely.
 
+## Docker Image
+
+You can find the Docker image for this project on Docker Hub:
+
+[![Docker Image](https://img.shields.io/docker/v/nithin1729s/pixel-plate-frontend?label=Docker%20Hub&style=flat-square?label=Docker%20Hub&style=flat-square)](https://hub.docker.com/r/nithin1729s/web3-vault-dapp)
+
+1. **Using the Image from Docker Hub**:
+    ```bash
+    docker pull nithin1729s/web3-vault-dapp:latest
+    docker run -p 3000:3000 nithin1729s/web3-vault-dapp:latest
+    ```
